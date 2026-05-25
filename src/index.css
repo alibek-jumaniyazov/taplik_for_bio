@@ -1,0 +1,77 @@
+/* ===== RESET & BASE ===== */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* ── Black & White Palette ── */
+  --clr-bg:            #0a0a0a;
+  --clr-bg-secondary:  #111111;
+  --clr-bg-card:       #161616;
+  --clr-bg-card-hover: #1e1e1e;
+
+  --clr-border:        rgba(255, 255, 255, 0.07);
+  --clr-border-hover:  rgba(255, 255, 255, 0.18);
+  --clr-border-accent: rgba(255, 255, 255, 0.35);
+
+  --clr-text-primary:   #f0f0f0;
+  --clr-text-secondary: rgba(240, 240, 240, 0.55);
+  --clr-text-muted:     rgba(240, 240, 240, 0.28);
+
+  /* Accent = pure white / off-white */
+  --clr-accent:       #ffffff;
+  --clr-accent-dim:   rgba(255, 255, 255, 0.75);
+  --clr-accent-soft:  rgba(255, 255, 255, 0.12);
+
+  /* Typography */
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body:    'Inter', system-ui, sans-serif;
+
+  /* Spacing */
+  --spacing-xs:  4px;
+  --spacing-sm:  8px;
+  --spacing-md:  16px;
+  --spacing-lg:  24px;
+  --spacing-xl:  40px;
+
+  /* Radii */
+  --radius-sm:   8px;
+  --radius-md:   14px;
+  --radius-lg:   22px;
+  --radius-full: 999px;
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.25s ease;
+  --transition-slow: 0.4s ease;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 14px rgba(0, 0, 0, 0.55);
+  --shadow-md: 0 8px 36px rgba(0, 0, 0, 0.65);
+  --shadow-lg: 0 20px 64px rgba(0, 0, 0, 0.75);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--clr-bg);
+  color: var(--clr-text-primary);
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+img   { max-width: 100%; height: auto; display: block; }
+button{ cursor: pointer; border: none; background: none; font-family: inherit; }
+a     { text-decoration: none; color: inherit; }
+
+/* scrollbar */
+::-webkit-scrollbar       { width: 3px; }
+::-webkit-scrollbar-track { background: var(--clr-bg); }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: var(--radius-full); }
+
+/* selection */
+::selection { background: rgba(255,255,255,0.15); color: var(--clr-text-primary); }

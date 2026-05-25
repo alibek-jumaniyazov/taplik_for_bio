@@ -1,175 +1,75 @@
-# Full-Stack Bun Monorepo Template
+# React + TypeScript + Vite
 
-A production-ready monorepo template with **Bun**, **Hono** (backend), **React** + **Vite** (frontend), **PostgreSQL**, **Redis**, and **JWT authentication**.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Features
+Currently, two official plugins are available:
 
-- **Monorepo** with Bun workspaces
-- **Backend**: Hono + OpenAPI + Drizzle ORM
-- **Frontend**: React 19 + Vite + Ant Design + Tailwind CSS
-- **Authentication**: JWT access/refresh tokens with Redis storage
-- **Type Safety**: Shared types between frontend and backend
-- **Code Quality**: Biome (lint + format), Husky, Commitlint
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-## Tech Stack
+## React Compiler
 
-| Layer | Technology |
-|-------|------------|
-| Runtime | Bun |
-| Backend | Hono, Zod OpenAPI, Drizzle ORM |
-| Frontend | React 19, Vite, Ant Design 6, Tailwind CSS 4 |
-| Database | PostgreSQL 17 |
-| Cache | Redis 7 |
-| Auth | JWT (jose), bcrypt |
-| State | Zustand, TanStack Query |
+The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
 
-## Quick Start
+Note: This will impact Vite dev & build performances.
 
-### 1. Clone and Setup
+## Expanding the ESLint configuration
 
-```bash
-git clone <repo-url> my-project
-cd my-project
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-# Run setup script (renames project, installs deps)
-./scripts/setup.sh
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
+
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 ```
 
-### 2. Configure Environment
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-Edit `.env` with your actual values:
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
 
-```env
-# Generate secure secrets
-JWT_SECRET=your_32_char_secret_here
-JWT_REFRESH_SECRET=your_32_char_refresh_secret
-POSTGRES_PASSWORD=your_secure_password
-REDIS_PASSWORD=your_redis_password
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 ```
-
-### 3. Start Services
-
-```bash
-# Start PostgreSQL and Redis
-docker compose up -d
-
-# Run database migrations
-cd apps/backend
-bun run db:migrate
-
-# Seed admin user
-bun run db:seed
-```
-
-### 4. Run Development
-
-```bash
-# From root - starts both backend and frontend
-bun run dev
-
-# Or separately
-bun run dev:backend  # http://localhost:4000
-bun run dev:frontend # http://localhost:3000
-```
-
-## Project Structure
-
-```
-├── apps/
-│   ├── backend/          # Hono API server
-│   │   ├── src/
-│   │   │   ├── db/       # Drizzle schema, migrations
-│   │   │   ├── lib/      # Utils, auth, errors
-│   │   │   └── routes/   # API endpoints
-│   │   └── drizzle.config.ts
-│   │
-│   └── frontend/         # React SPA
-│       └── src/
-│           ├── app/      # Providers, router, API client
-│           ├── modules/  # Feature modules (auth, dashboard)
-│           ├── shared/   # Layouts, hooks, utils
-│           └── types/
-│
-├── shared/               # Shared code
-│   └── src/
-│       ├── types/        # API types, error codes
-│       └── env.ts        # Environment validation
-│
-├── scripts/
-│   └── setup.sh          # Project setup script
-│
-├── docker-compose.yml
-├── biome.json
-└── package.json
-```
-
-## Scripts
-
-| Command | Description |
-|---------|-------------|
-| `bun run dev` | Start all apps in dev mode |
-| `bun run dev:backend` | Start backend only |
-| `bun run dev:frontend` | Start frontend only |
-| `bun run check` | Run Biome linter |
-| `bun run check:fix` | Fix lint issues |
-
-### Backend Scripts (in `apps/backend/`)
-
-| Command | Description |
-|---------|-------------|
-| `bun run db:generate` | Generate migrations |
-| `bun run db:migrate` | Run migrations |
-| `bun run db:studio` | Open Drizzle Studio |
-| `bun run db:seed` | Seed admin user |
-
-## API Documentation
-
-After starting the backend, visit:
-- **OpenAPI JSON**: http://localhost:4000/doc
-- **Scalar UI**: http://localhost:4000/reference
-
-## Default Credentials
-
-After running `db:seed`:
-- **Phone**: +998900000000
-- **Password**: admin123
-
-> Change these immediately in production!
-
-## Authentication Flow
-
-1. **Login** → Returns `accessToken` (15min) + `refreshToken` (7d)
-2. **API Calls** → Include `Authorization: Bearer <accessToken>`
-3. **Token Refresh** → Use `refreshToken` to get new tokens
-4. **Logout** → Invalidates refresh token in Redis
-
-## Adding New Features
-
-### Backend Route
-
-```typescript
-// apps/backend/src/routes/example/example.routes.ts
-import { createRoute } from "@/lib";
-
-export const exampleRoute = createRoute({
-  method: "get",
-  path: "/example",
-  responses: { 200: { description: "Success" } },
-});
-```
-
-### Frontend Module
-
-```
-apps/frontend/src/modules/example/
-├── components/
-├── hooks/
-├── pages/
-├── services/
-├── store/
-└── types/
-```
-
-## License
-
-MIT
